@@ -1,0 +1,62 @@
+NSA:
+  C1:
+    SRS:
+      filename: nsasrsC1.a1_snowyear_2025_trimmed.csv
+      title: Sonic ranging sounders
+      var_name: 
+        - datetime_nsasrsC1.a1_2025
+        - air_temperature_nsasrsC1.a1_2025
+        - air_temperature_2_nsasrsC1.a1_2025
+        - air_temperature_3_nsasrsC1.a1_2025
+        - distance_1_nsasrsC1.a1_2025
+        - distance_2_nsasrsC1.a1_2025
+        - distance_3_nsasrsC1.a1_2025
+        - distance_4_nsasrsC1.a1_2025
+        - distance_5_nsasrsC1.a1_2025
+        - distance_6_nsasrsC1.a1_2025
+        - distance_7_nsasrsC1.a1_2025
+        - distance_8_nsasrsC1.a1_2025
+        - distance_9_nsasrsC1.a1_2025
+        - data_quality_1_nsasrsC1.a1_2025
+        - data_quality_2_nsasrsC1.a1_2025
+        - data_quality_3_nsasrsC1.a1_2025
+        - data_quality_4_nsasrsC1.a1_2025
+        - data_quality_5_nsasrsC1.a1_2025
+        - data_quality_6_nsasrsC1.a1_2025
+        - data_quality_7_nsasrsC1.a1_2025
+        - data_quality_8_nsasrsC1.a1_2025
+        - data_quality_9_nsasrsC1.a1_2025
+
+    LPM:
+      filename: nsalpmC1.a1_snowyear_2025_trimmed.csv
+      title: Laser Precipitation Monitor
+      var_name: 
+        - datetime_nsalpmC1.a1_2025
+        - air_temperature_nsalpmC1.a1_2025
+        - accum_precip_nsalpmC1.a1_2025
+        - number_particles_nsalpmC1.a1_2025
+
+    SPMF:
+      filename: nsaspmfC1.a1_snowyear_2025_trimmed.csv
+      title: Solid Precipitation Mass Flux
+      var_name:
+        - datetime_nsaspmfC1.a1_2025
+        - mass_flux_top_mean_nsaspmfC1.a1_2025
+        - mass_flux_bottom_mean_nsaspmfC1.a1_2025
+        - wind_speed_top_mean_nsaspmfC1.a1_2025
+        - wind_speed_bottom_mean_nsaspmfC1.a1_2025
+
+
+    SONICWIND3D:
+      filename: nsasonicwind3dC1.a1_snowyear_2025_trimmed.csv
+      title: Sonic wind
+      var_name: 
+        - datetime_nsasonicwind3dC1.a1_2025
+        - u_wind_nsasonicwind3dC1.a1_2025
+        - v_wind_nsasonicwind3dC1.a1_2025
+        - w_wind_nsasonicwind3dC1.a1_2025
+
+# OLI:
+#   M1:
+#     SRS:
+#       - distance
