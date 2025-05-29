@@ -61,11 +61,13 @@ nav {
 
 #cut-nav {
   background: var(--color-1);
+  top: 0;
   z-index: 1000;
 }
 
 #mode-nav {
   background: var(--color-2);
+  top: 3.5em;
   z-index: 999;
   /* margin-top: 0.5em;  optional spacing */
 }
@@ -200,6 +202,26 @@ img {
 .close:hover {
   color: #F7CFD8;
 }
+
+
+
+/* Plotly Plots */
+.plot-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 100px;
+  padding: 50px 0; 
+}
+
+.plot-container {
+  width: 95%;
+  min-height: 300px;
+  /* border: 1px solid #ccc; */
+  padding: 10px;
+  /* background: #fafafa; */
+}
+
+
 
 /* sidebar */
 #sidebar-toggle {
