@@ -56,7 +56,81 @@ NSA:
         - v_wind_nsasonicwind3dC1.a1_2025
         - w_wind_nsasonicwind3dC1.a1_2025
 
-# OLI:
-#   M1:
-#     SRS:
-#       - distance
+  E12:
+    SRS:
+      filename: nsasrsE12.a1_snowyear_2025_trimmed.csv
+      title: Sonic ranging sounders
+      var_name: 
+        - datetime_nsasrsE12.a1_2025
+        - air_temperature_nsasrsE12.a1_2025
+        - air_temperature_2_nsasrsE12.a1_2025
+        - air_temperature_3_nsasrsE12.a1_2025
+        - distance_1_nsasrsE12.a1_2025
+        - distance_2_nsasrsE12.a1_2025
+        - distance_3_nsasrsE12.a1_2025
+        - distance_4_nsasrsE12.a1_2025
+        - distance_5_nsasrsE12.a1_2025
+        - distance_6_nsasrsE12.a1_2025
+        - distance_7_nsasrsE12.a1_2025
+        - distance_8_nsasrsE12.a1_2025
+        - distance_9_nsasrsE12.a1_2025
+        - data_quality_1_nsasrsE12.a1_2025
+        - data_quality_2_nsasrsE12.a1_2025
+        - data_quality_3_nsasrsE12.a1_2025
+        - data_quality_4_nsasrsE12.a1_2025
+        - data_quality_5_nsasrsE12.a1_2025
+        - data_quality_6_nsasrsE12.a1_2025
+        - data_quality_7_nsasrsE12.a1_2025
+        - data_quality_8_nsasrsE12.a1_2025
+        - data_quality_9_nsasrsE12.a1_2025
+
+    LPM:
+      filename: nsalpmE12.a1_snowyear_2025_trimmed.csv
+      title: Laser Precipitation Monitor
+      var_name: 
+        - datetime_nsalpmE12.a1_2025
+        - air_temperature_nsalpmE12.a1_2025
+        - accum_precip_nsalpmE12.a1_2025
+        - number_particles_nsalpmE12.a1_2025
+
+    SPMF:
+      filename: nsaspmfE12.a1_snowyear_2025_trimmed.csv
+      title: Solid Precipitation Mass Flux
+      var_name:
+        - datetime_nsaspmfE12.a1_2025
+        - mass_flux_top_mean_nsaspmfE12.a1_2025
+        - mass_flux_bottom_mean_nsaspmfE12.a1_2025
+        - wind_speed_top_mean_nsaspmfE12.a1_2025
+        - wind_speed_bottom_mean_nsaspmfE12.a1_2025
+
+
+    SONICWIND3D:
+      filename: nsasonicwind3dE12.a1_snowyear_2025_trimmed.csv
+      title: Sonic wind
+      var_name: 
+        - datetime_nsasonicwind3dE12.a1_2025
+        - u_wind_nsasonicwind3dE12.a1_2025
+        - v_wind_nsasonicwind3dE12.a1_2025
+        - w_wind_nsasonicwind3dE12.a1_2025
+
+    WBGEONOR:
+      filename: nsawbgeonorE12.a1_snowyear_2025_trimmed.csv
+      title: Weight Bucket GEONOR
+      var_name: 
+        - datetime_nsawbgeonorE12.a1_2025
+        - fluid_level_1_nsawbgeonorE12.a1_2025
+        - fluid_level_2_nsawbgeonorE12.a1_2025
+        - fluid_level_3_nsawbgeonorE12.a1_2025
+        - air_temperature_nsawbgeonorE12.a1_2025
+
+  E10:
+    LPM:
+      filename: nsalpmE10.a1_snowyear_2025_trimmed.csv
+      title: Laser Precipitation Monitor
+      var_name: 
+        - datetime_nsalpmE10.a1_2025
+        - air_temperature_nsalpmE10.a1_2025
+        - accum_precip_nsalpmE10.a1_2025
+        - number_particles_nsalpmE10.a1_2025
+
+
