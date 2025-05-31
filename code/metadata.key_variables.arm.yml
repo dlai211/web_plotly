@@ -47,7 +47,7 @@ NSA:
         - wind_speed_bottom_mean_nsaspmfC1.a1_2025
 
 
-    SONICWIND3D:
+    SONIC:
       filename: nsasonicwind3dC1.a1_snowyear_2025_trimmed.csv
       title: Sonic wind
       var_name: 
@@ -104,7 +104,7 @@ NSA:
         - wind_speed_bottom_mean_nsaspmfE12.a1_2025
 
 
-    SONICWIND3D:
+    SONIC:
       filename: nsasonicwind3dE12.a1_snowyear_2025_trimmed.csv
       title: Sonic wind
       var_name: 

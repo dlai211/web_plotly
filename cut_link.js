@@ -2,7 +2,7 @@
 const sites = ["c1", "e12", "e10"];
 const instruments = ["SRS", "LPM", "SPMF", "SONIC", "WBGEONOR"];
 const siteInstruments = {
-c1: ["SRS", "LPM", "SPMF", "SONIC", "WBGEONOR"],
+c1: ["SRS", "LPM", "SPMF", "SONIC"],
 e12: ["SRS", "LPM", "SPMF", "SONIC", "WBGEONOR"],
 e10: ["LPM"]
 };

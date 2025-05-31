@@ -34,25 +34,77 @@ def trim_csv(yml):
             except Exception as e:
                 print(f"❌ Failed to process {filename}: {e}")
 
-def load_and_prepare_dataframe(site: str, instrument: str, yml: dict, data_folder: str = "../data") -> pd.DataFrame:
+def load_and_prepare_dataframe(site: str, instrument: str, yml: dict, data_folder: str = "../../data") -> tuple[pd.DataFrame, list[str], str]:
     data_info = yml['NSA'][site][instrument]
     vars = data_info['var_name']
+    title = data_info['title']
     filename = data_info['filename']
 
+    # Load and resample
     df = pd.read_csv(os.path.join(data_folder, filename), usecols=vars)
     df[vars[0]] = pd.to_datetime(df[vars[0]])
     df = df.set_index(vars[0])
     df = df.resample("10T").mean()
     df = df.dropna(how='all', subset=vars[1:])
 
-    last_valid_time = df.dropna(how='all')[vars[1:]].last_valid_index()
+    # Define valid time window (last 4 full weeks)
+    last_valid_time = df[vars[1:]].dropna(how='all').index.max()
     if last_valid_time is None:
         raise ValueError(f"No valid data found for {site}-{instrument}")
-    first_valid_time = last_valid_time - timedelta(days=21)
-    df = df.loc[first_valid_time:last_valid_time].reset_index()
+    
+    end_of_week_4 = last_valid_time.floor("D") + pd.Timedelta(hours=23, minutes=50)
+    start_of_week_1 = end_of_week_4 - timedelta(days=28)
+    seconds_in_week = 7 * 24 * 60 * 60
 
-    df['week'] = ((df[vars[0]] - df[vars[0]].min()).dt.days // 7 + 1).astype(int)
-    return df, vars, data_info['title']
+    df = df.loc[start_of_week_1:end_of_week_4 - pd.Timedelta(minutes=9)].reset_index()
+    df['week'] = (((df[vars[0]] - start_of_week_1).dt.total_seconds()) // seconds_in_week + 1).astype(int)
+    df['is_nan'] = df[vars[1]].isna().astype(int)
+
+    return df, vars, title
+
+def plot_datatime(df: pd.DataFrame, vars: List[str], time_col: str, title: str, group_name: str, fontfamily="Open Sans") -> go.Figure:
+    fig = go.Figure()
+
+    for week in range(1, 5):
+        df_w = df[(df['week'] == week)]
+        if not df_w.empty:
+            fig.add_trace(go.Scattergl(
+                x=df_w[vars[0]],
+                y=df_w['is_nan'] + df_w['week'],
+                mode='markers',
+                marker=dict(symbol='square', size=6, opacity=0.8),
+                name=f"Week {week}",
+                showlegend=True
+            ))
+
+    fig.update_layout(
+        paper_bgcolor='#B5828C',
+        plot_bgcolor='#B5828C',
+        title=dict(
+            text=f"{title} - Missing Data (Weeks 1–4)",
+            font=dict(color='#EBFDFB', size=26, family=fontfamily)
+        ),
+        xaxis=dict(
+            title=dict(text=vars[0], font=dict(color='#EBFDFB', size=20, family=fontfamily)),
+            tickfont=dict(color='#EBFDFB', size=13.5, family=fontfamily)
+        ),
+        yaxis=dict(
+            title=dict(text="Week", font=dict(color='#EBFDFB', size=20, family=fontfamily)),
+            tickmode='array',
+            tickvals=[1, 2, 3, 4],
+            ticktext=["Week 1", "Week 2", "Week 3", "Week 4"],
+            tickfont=dict(color='#EBFDFB', size=13.5, family=fontfamily),
+            range=[0.5, 4.5]
+        ),
+        legend=dict(
+            x=1.02, y=1, yanchor='top',
+            font=dict(color='#EBFDFB', size=15, family=fontfamily)
+        ),
+        margin=dict(r=100),
+        height=500
+    )
+
+    return fig
 
 def plot_grouped_variables(df: pd.DataFrame, vars: List[str], time_col: str, title: str, group_name: str, fontfamily="Open Sans") -> go.Figure:
     fig = go.Figure()
@@ -108,40 +160,75 @@ def plot_grouped_variables(df: pd.DataFrame, vars: List[str], time_col: str, tit
 
 def plot_single_variable(df: pd.DataFrame, var: str, time_col: str, title: str, fontfamily="Open Sans") -> go.Figure:
     fig = make_subplots(rows=2, cols=1, row_heights=[0.7, 0.3], shared_xaxes=True, vertical_spacing=0.05)
-    trace_meta = []
+    trace_meta, hist_meta = [], []
 
-    for week in sorted(df['week'].unique()):
+    var = vars[1]
+    time_col = vars[0]
+    weeks = sorted(df['week'].unique(), reverse=True)  # show Week 4 first in dropdown
+
+    # Add one line plot per week
+    for week in weeks:
         df_week = df[df['week'] == week]
         trace = go.Scattergl(
             x=df_week[time_col],
             y=df_week[var],
             mode='lines',
             name=f"{var} (Week {week})",
-            visible=(week == df['week'].max()),
+            visible=(week == weeks[0]),  # only show last week by default
+            showlegend=True,
             line=dict(color="#55AD9B")
         )
         fig.add_trace(trace, row=1, col=1)
-        trace_meta.append(week)
+        trace_meta.append(week)  # <-- fix: track visibility index
 
-    hist = go.Histogram(
-        x=df[var],
-        nbinsx=100,
-        marker=dict(color="#55AD9B"),
-        opacity=0.75,
-        name=f"{var} Histogram"
-    )
-    fig.add_trace(hist, row=2, col=1)
 
+    for week in weeks:
+        df_week = df[df['week'] == week]
+        hist = go.Histogram(
+            x=df_week[var],
+            nbinsx=100,
+            marker=dict(color="#55AD9B"),
+            opacity=0.75,
+            name=f"{var} Histogram (Week {week})",
+            visible=(week == weeks[0]),
+            showlegend=False
+        )
+        fig.add_trace(hist, row=2, col=1)
+        hist_meta.append(week)
+        
+    # Create dropdown menu buttons
+    buttons = []
+    for i, week in enumerate(weeks):
+        n_weeks = len(weeks)
+        visibility = [j == i for j in range(n_weeks)] + [j == i for j in range(n_weeks)]
+        buttons.append(dict(
+            label=f"Week {week}",
+            method="update",
+            args=[
+                {"visible": visibility},
+                {"title": f"{title} - {var} (Week {week})"}
+            ]
+        ))
+
+    # Layout
     fig.update_layout(
         paper_bgcolor='#B5828C',
-        title=dict(text=f"{title} - {var} (Week {df['week'].max()})",
-                   font=dict(color='#EBFDFB', size=26, family=fontfamily)),
-        xaxis=dict(title=dict(text=time_col, font=dict(color='#EBFDFB', size=20, family=fontfamily)),
-                   tickfont=dict(color='#EBFDFB', size=13.5, family=fontfamily)),
-        yaxis=dict(title=dict(text=var, font=dict(color='#EBFDFB', size=20, family=fontfamily)),
-                   tickfont=dict(color='#EBFDFB', size=13.5, family=fontfamily)),
-        legend=dict(x=1.02, y=1, yanchor='top',
-                    font=dict(color='#EBFDFB', size=15, family=fontfamily)),
+        title=dict(
+            text=f"{title} - {var} (Week {weeks[0]})",
+            font=dict(color='#EBFDFB', size=26, family=fontfamily)
+        ),
+        xaxis2=dict(  # x-axis of histogram (bottom plot)
+            title=dict(text=time_col, font=dict(color='#EBFDFB', size=20, family=fontfamily)),
+            tickfont=dict(color='#EBFDFB', size=13.5, family=fontfamily)
+        ),
+        yaxis=dict(
+            title=dict(text=var, font=dict(color='#EBFDFB', size=20, family=fontfamily)),
+            tickfont=dict(color='#EBFDFB', size=13.5, family=fontfamily)
+        ),
+        legend=dict(
+            x=1.02, y=1, yanchor='top',
+            font=dict(color='#EBFDFB', size=15, family=fontfamily)
+        ),
         updatemenus=[dict(
             type="dropdown",
             direction="down",
@@ -151,21 +238,12 @@ def plot_single_variable(df: pd.DataFrame, var: str, time_col: str, title: str, 
             xanchor="left",
             yanchor="top",
             font=dict(color="lightgrey", size=15, family=fontfamily),
-            buttons=[
-                dict(
-                    label=f"Week {w}",
-                    method="update",
-                    args=[
-                        {"visible": [i == w - 1 for i in range(len(trace_meta))] + [True]},
-                        {"title": f"{title} - {var} (Week {w})"}
-                    ]
-                )
-                for w in sorted(df['week'].unique())
-            ]
+            buttons=buttons
         )],
         height=800
     )
     return fig
+
 
 
 def generate_html(site: str, instrument: str, yml: dict, output_path: str = "output.html"):
