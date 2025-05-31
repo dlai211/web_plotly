@@ -1,10 +1,10 @@
 // Create cut-links
-const sites = ["c1", "e12", "e10"];
+const sites = ["C1", "E12", "E10"];
 const instruments = ["SRS", "LPM", "SPMF", "SONIC", "WBGEONOR"];
 const siteInstruments = {
-c1: ["SRS", "LPM", "SPMF", "SONIC"],
-e12: ["SRS", "LPM", "SPMF", "SONIC", "WBGEONOR"],
-e10: ["LPM"]
+C1: ["SRS", "LPM", "SPMF", "SONIC"],
+E12: ["SRS", "LPM", "SPMF", "SONIC", "WBGEONOR"],
+E10: ["LPM"]
 };
 
 const cutLinks = document.getElementById("cut-links");
