@@ -56,7 +56,7 @@ instrLinks.forEach(link => {
     if (currentSite && siteInstruments[currentSite].includes(selectedInstrument)) {
       currentInstrument = selectedInstrument;
       updateNavState();
-      window.location.href = `/plots/${currentSite}/${currentInstrument}.html`;
+      window.location.href = `../${currentSite}/${currentInstrument}.html`;
     }
   });
 });
