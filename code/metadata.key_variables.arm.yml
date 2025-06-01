@@ -2,7 +2,7 @@ NSA:
   C1:
     SRS:
       filename: nsasrsC1.a1_snowyear_2025_trimmed.csv
-      title: Sonic ranging sounders
+      title: Sonic Ranging Sounders
       var_name: 
         - datetime
         - [air_temperature, air_temperature_2, air_temperature_3] 
@@ -31,7 +31,7 @@ NSA:
 
     SONICWIND3D:
       filename: nsasonicwind3dC1.a1_snowyear_2025_trimmed.csv
-      title: Sonic wind
+      title: Sonic Wind 3D
       var_name: 
         - datetime
         - u_wind
@@ -41,7 +41,7 @@ NSA:
   E12:
     SRS:
       filename: nsasrsE12.a1_snowyear_2025_trimmed.csv
-      title: Sonic ranging sounders
+      title: Sonic Ranging Sounders
       var_name: 
         - datetime
         - [air_temperature, air_temperature_2, air_temperature_3] 
@@ -70,7 +70,7 @@ NSA:
 
     SONICWIND3D:
       filename: nsasonicwind3dE12.a1_snowyear_2025_trimmed.csv
-      title: Sonic wind
+      title: Sonic Wind 3D
       var_name: 
         - datetime
         - u_wind

@@ -327,6 +327,9 @@ def generate_html(site, instrument, title, figs, output_path):
             </div>
         </section>
 
+        <script src="../../cut_link.js"></script>
+        <script src="../../navigation.js"></script>
+
         <!-- Modal for Fullscreen Image -->
         <div id="image-modal" class="modal">
             <span class="close">&times;</span>
@@ -335,9 +338,7 @@ def generate_html(site, instrument, title, figs, output_path):
 
         {''.join(html_blocks)}
 
-        <script src="../../cut_link.js"></script>
         <script src="../../scroll.js"></script>
-        <script src="../../navigation.js"></script>
     </body>
     </html>
     """
