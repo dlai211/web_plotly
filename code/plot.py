@@ -1,22 +1,12 @@
 # import modules
-import os, sys, time, random, yaml
-import numpy as np
-import matplotlib.pyplot as plt
+import os, yaml, re
 import pandas as pd
-from tqdm.rich import tqdm
-import seaborn as sns
-from matplotlib.ticker import FormatStrFormatter
-import matplotlib.ticker as ticker
-from collections import Counter
 import plotly.graph_objects as go
 import plotly.io as pio
 from plotly.subplots import make_subplots
-from typing import List, Dict
+from typing import List
 from datetime import timedelta
-
-# loading the yaml file
-with open('metadata.key_variables.arm.yml', 'r') as file:
-    yml = yaml.safe_load(file)
+from datetime import datetime
 
 
 # Trim and save the csv to itself with only the specified columns
@@ -34,20 +24,49 @@ def trim_csv(yml):
             except Exception as e:
                 print(f"❌ Failed to process {filename}: {e}")
 
-def load_and_prepare_dataframe(site: str, instrument: str, yml: dict, data_folder: str = "../../data") -> tuple[pd.DataFrame, list[str], str]:
+def filename_from_yml(yml: dict, site: str, instrument: str) -> str:
+    """
+    Extracts the filename from the YAML configuration for a given site and instrument.
+    """
+    data_level = "a1"
+    location = "NSA"
+    current_time = datetime.now()
+    if current_time.month < 8:
+        snow_year = current_time.year
+    else:
+        snow_year = current_time.year + 1
+    
+    datastream = f"{location.lower()}{instrument.lower()}{site}.{data_level}"
+    filename = f"{datastream}_snowyear_{snow_year}_trimmed.csv" # real data does not have "_trimmed" 
+    datastream = datastream + f"_{snow_year}"
+
+    return datastream, filename
+
+def shorten_var_name(var: str) -> str:
+    """
+    Shortens the variable name by removing the '_nsa' suffix.
+    """
+    match = re.match(r"^(.*?)_nsa", var)
+    prefix = match.group(1) # get rid of the _nsa part
+    return prefix
+
+def load_and_prepare_dataframe(yml: dict, site: str, instrument: str, data_folder: str = "../data") -> tuple[pd.DataFrame, list[str], str]:
     data_info = yml['NSA'][site][instrument]
     vars = data_info['var_name']
     title = data_info['title']
-    filename = data_info['filename']
+
+    datastream, filename = filename_from_yml(yml, site, instrument)
+    # Flatten the variables + datastream
+    vars = [item + "_" + datastream for group in vars for item in (group if isinstance(group, list) else [group])]
 
     # Load and resample
     df = pd.read_csv(os.path.join(data_folder, filename), usecols=vars)
     df[vars[0]] = pd.to_datetime(df[vars[0]])
     df = df.set_index(vars[0])
-    df = df.resample("10T").mean()
+    df = df.resample("10min").mean() # 10-minute intervals
     df = df.dropna(how='all', subset=vars[1:])
 
-    # Define valid time window (last 4 full weeks)
+    # Define last 4 weeks
     last_valid_time = df[vars[1:]].dropna(how='all').index.max()
     if last_valid_time is None:
         raise ValueError(f"No valid data found for {site}-{instrument}")
@@ -62,37 +81,36 @@ def load_and_prepare_dataframe(site: str, instrument: str, yml: dict, data_folde
 
     return df, vars, title
 
-def plot_datatime(df: pd.DataFrame, vars: List[str], time_col: str, title: str, group_name: str, fontfamily="Open Sans") -> go.Figure:
+def plot_datatime(df: pd.DataFrame, time_col: str, title: str, fontfamily="Open Sans") -> go.Figure:
     fig = go.Figure()
 
     for week in range(1, 5):
         df_w = df[(df['week'] == week)]
         if not df_w.empty:
             fig.add_trace(go.Scattergl(
-                x=df_w[vars[0]],
+                x=df_w[time_col],
                 y=df_w['is_nan'] + df_w['week'],
                 mode='markers',
                 marker=dict(symbol='square', size=6, opacity=0.8),
-                name=f"Week {week}",
+                name=f"week {week}",
                 showlegend=True
             ))
 
     fig.update_layout(
         paper_bgcolor='#B5828C',
-        plot_bgcolor='#B5828C',
         title=dict(
-            text=f"{title} - Missing Data (Weeks 1–4)",
+            text=f"{title} (weeks 1–4)",
             font=dict(color='#EBFDFB', size=26, family=fontfamily)
         ),
         xaxis=dict(
-            title=dict(text=vars[0], font=dict(color='#EBFDFB', size=20, family=fontfamily)),
+            title=dict(text="datetime", font=dict(color='#EBFDFB', size=20, family=fontfamily)),
             tickfont=dict(color='#EBFDFB', size=13.5, family=fontfamily)
         ),
         yaxis=dict(
-            title=dict(text="Week", font=dict(color='#EBFDFB', size=20, family=fontfamily)),
+            title=dict(text="week", font=dict(color='#EBFDFB', size=20, family=fontfamily)),
             tickmode='array',
             tickvals=[1, 2, 3, 4],
-            ticktext=["Week 1", "Week 2", "Week 3", "Week 4"],
+            ticktext=["week 1", "week 2", "week 3", "week 4"],
             tickfont=dict(color='#EBFDFB', size=13.5, family=fontfamily),
             range=[0.5, 4.5]
         ),
@@ -109,25 +127,40 @@ def plot_datatime(df: pd.DataFrame, vars: List[str], time_col: str, title: str, 
 def plot_grouped_variables(df: pd.DataFrame, vars: List[str], time_col: str, title: str, group_name: str, fontfamily="Open Sans") -> go.Figure:
     fig = go.Figure()
     trace_meta = []
+    weeks = sorted(df['week'].unique(), reverse=True)  # show Week 4 first in dropdown
 
     for var in vars:
-        for week in sorted(df['week'].unique()):
+        for week in weeks: # show Week 4 first in dropdown
             df_week = df[df['week'] == week]
             trace = go.Scattergl(
                 x=df_week[time_col],
                 y=df_week[var],
                 mode='lines',
-                name=f"{var} (Week {week})",
+                name=f"{shorten_var_name(var)} (Week {week})",
                 visible=(week == df['week'].max())
             )
             fig.add_trace(trace)
             trace_meta.append(week)
 
+        buttons = []
+
+    for i, week in enumerate(weeks):
+        n_weeks = len(weeks)
+        visibility = [j == i for j in range(n_weeks)] + [j == i for j in range(n_weeks)]
+        buttons.append(dict(
+            label=f"Week {week}",
+            method="update",
+            args=[
+                {"visible": visibility},
+                {"title": f"{title} - {group_name} (Week {week})"}
+            ]
+        ))
+
     fig.update_layout(
         paper_bgcolor='#B5828C',
-        title=dict(text=f"{title} - {group_name} (Week {df['week'].max()})",
+        title=dict(text=f"{title} - {group_name} (Week {weeks[0]})",
                    font=dict(color='#EBFDFB', size=26, family=fontfamily)),
-        xaxis=dict(title=dict(text=time_col, font=dict(color='#EBFDFB', size=20, family=fontfamily)),
+        xaxis=dict(title=dict(text="datetime", font=dict(color='#EBFDFB', size=20, family=fontfamily)),
                    tickfont=dict(color='#EBFDFB', size=13.5, family=fontfamily)),
         yaxis=dict(title=dict(text=group_name, font=dict(color='#EBFDFB', size=20, family=fontfamily)),
                    tickfont=dict(color='#EBFDFB', size=13.5, family=fontfamily)),
@@ -142,28 +175,16 @@ def plot_grouped_variables(df: pd.DataFrame, vars: List[str], time_col: str, tit
             xanchor="left",
             yanchor="top",
             font=dict(color="lightgrey", size=15, family=fontfamily),
-            buttons=[
-                dict(
-                    label=f"Week {w}",
-                    method="update",
-                    args=[
-                        {"visible": [t == w for t in trace_meta]},
-                        {"title": f"{title} - {group_name} (Week {w})"}
-                    ],
-                )
-                for w in sorted(df['week'].unique())
-            ]
+            buttons=buttons
         )],
         height=800
     )
     return fig
 
-def plot_single_variable(df: pd.DataFrame, var: str, time_col: str, title: str, fontfamily="Open Sans") -> go.Figure:
+def plot_single_variable(df: pd.DataFrame, var: str, time_col: str, title: str, fontfamily="Open Sans") -> go.Figure: 
+
     fig = make_subplots(rows=2, cols=1, row_heights=[0.7, 0.3], shared_xaxes=True, vertical_spacing=0.05)
     trace_meta, hist_meta = [], []
-
-    var = vars[1]
-    time_col = vars[0]
     weeks = sorted(df['week'].unique(), reverse=True)  # show Week 4 first in dropdown
 
     # Add one line plot per week
@@ -173,13 +194,13 @@ def plot_single_variable(df: pd.DataFrame, var: str, time_col: str, title: str, 
             x=df_week[time_col],
             y=df_week[var],
             mode='lines',
-            name=f"{var} (Week {week})",
-            visible=(week == weeks[0]),  # only show last week by default
+            name=f"{shorten_var_name(var)} (Week {week})",
+            visible=(week == weeks[0]),
             showlegend=True,
             line=dict(color="#55AD9B")
         )
         fig.add_trace(trace, row=1, col=1)
-        trace_meta.append(week)  # <-- fix: track visibility index
+        trace_meta.append(week)
 
 
     for week in weeks:
@@ -206,7 +227,7 @@ def plot_single_variable(df: pd.DataFrame, var: str, time_col: str, title: str, 
             method="update",
             args=[
                 {"visible": visibility},
-                {"title": f"{title} - {var} (Week {week})"}
+                {"title": f"{title} - {shorten_var_name(var)} (Week {week})"}
             ]
         ))
 
@@ -214,11 +235,14 @@ def plot_single_variable(df: pd.DataFrame, var: str, time_col: str, title: str, 
     fig.update_layout(
         paper_bgcolor='#B5828C',
         title=dict(
-            text=f"{title} - {var} (Week {weeks[0]})",
+            text=f"{title} - {shorten_var_name(var)} (Week {weeks[0]})",
             font=dict(color='#EBFDFB', size=26, family=fontfamily)
         ),
-        xaxis2=dict(  # x-axis of histogram (bottom plot)
-            title=dict(text=time_col, font=dict(color='#EBFDFB', size=20, family=fontfamily)),
+        xaxis=dict(  # x-axis of top plot
+            title=dict(text="datetime", font=dict(color='#EBFDFB', size=20, family=fontfamily)),
+            tickfont=dict(color='#EBFDFB', size=13.5, family=fontfamily)
+        ),
+        xaxis2=dict(
             tickfont=dict(color='#EBFDFB', size=13.5, family=fontfamily)
         ),
         yaxis=dict(
@@ -242,36 +266,31 @@ def plot_single_variable(df: pd.DataFrame, var: str, time_col: str, title: str, 
         )],
         height=800
     )
+    fig.update_xaxes(showticklabels=True, row=1, col=1)
+
     return fig
 
 
 
-def generate_html(site: str, instrument: str, yml: dict, output_path: str = "output.html"):
-    
-    df, vars, title = load_and_prepare_dataframe(site, instrument, yml)
-    time_col = vars[0]
-    group_vars = [v for v in vars if v != time_col]
-
-    groups: Dict[str, List[str]] = {
-        "Air Temperature": [v for v in group_vars if "air_temperature" in v],
-        "Distance": [v for v in group_vars if "distance_" in v],
-        "Data Quality": [v for v in group_vars if "data_quality_" in v],
-        "Other": [v for v in group_vars if all(kw not in v for kw in ["air_temperature", "distance_", "data_quality_"])]
-    }
-
-    figs = {gname: plot_grouped_variables(df, gvars, time_col, title, gname) for gname, gvars in groups.items() if gvars}
-
-    html_blocks = []
+def generate_html(site, instrument, title, figs, output_path):
+    html_blocks, mode_blocks = [], []
     for i, (name, fig) in enumerate(figs.items()):
-        fig_html = pio.to_html(fig, include_plotlyjs=('cdn' if i == 0 else False), full_html=False)
-        block = f"""
-        <div class="plot-wrapper" data-container="u_wind_container">
-            <div id=\"{name.replace(' ', '_').lower()}_container\"  class="plot-container">
+
+        mode_block = f"""
+                <li data-target="{name}_container"><a href="#">{name}</a></li>
+        """
+        mode_blocks.append(mode_block)
+
+
+        fig_html = pio.to_html(fig, include_plotlyjs="cdn", full_html=False)
+        html_block = f"""
+        <div class="plot-wrapper" data-container="{name}_container">
+            <div id="{name}_container"  class="plot-container">
                 {fig_html}
             </div>
         </div>
         """
-        html_blocks.append(block)
+        html_blocks.append(html_block)
 
     full_html = f"""
     <!DOCTYPE html>
@@ -282,7 +301,6 @@ def generate_html(site: str, instrument: str, yml: dict, output_path: str = "out
         <title>{title} Plotly Plots</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
         <link rel="stylesheet" href="../../style.css">
-        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     </head>
     <body>
         <h1>{title} ({instrument}, {site}) Plotly Plots</h1>
@@ -295,9 +313,7 @@ def generate_html(site: str, instrument: str, yml: dict, output_path: str = "out
         <nav id="mode-nav">
             <ul>
                 <li>Plot: </li>
-                <li data-target="u_wind_container"><a href="#">u wind</a></li>
-                <li data-target="v_wind_container"><a href="#">v wind</a></li>
-                <li data-target="w_wind_container"><a href="#">w wind</a></li>
+                {''.join(mode_blocks)}
             </ul>
         </nav>
 
@@ -325,7 +341,47 @@ def generate_html(site: str, instrument: str, yml: dict, output_path: str = "out
     </body>
     </html>
     """
-
+    
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(full_html)
     print(f"Saved: {output_path}")
+
+
+def main():
+    # loading the yaml file
+    base_dir = os.path.dirname(__file__)
+    file_path = os.path.join(base_dir, 'metadata.key_variables.arm.yml')
+    with open(file_path, 'r') as file:
+        yml = yaml.safe_load(file)
+
+    for site in yml['NSA'].keys():
+        for instrument in yml['NSA'][site].keys():
+            figs = {}
+
+            all_vars = yml['NSA'][site][instrument]['var_name']
+            df, vars, title = load_and_prepare_dataframe(yml, site, instrument, data_folder=os.path.join(base_dir, '..', 'data'))
+            datastream, filename = filename_from_yml(yml, site, instrument)
+            time_col = vars[0]
+
+            fig_datetime = plot_datatime(df, time_col, title, fontfamily="Open Sans")
+            figs['datetime'] = fig_datetime
+
+            for i in range(1, len(all_vars)):
+                if isinstance(all_vars[i], list): # list?
+                    group = all_vars[i]
+                    group_name = re.sub(r'_\d+$', '', group[0])
+                    full_group = [item + "_" + datastream for item in group]
+                    fig_group = plot_grouped_variables(df, full_group, time_col, title, group_name, fontfamily="Open Sans")
+                    figs[group_name] = fig_group
+                else:
+                    single_name = all_vars[i]
+                    full_single = single_name + "_" + datastream
+                    fig_single = plot_single_variable(df, full_single, time_col, title, fontfamily="Open Sans")
+                    figs[single_name] = fig_single
+
+            # Generate HTML
+            output_path = os.path.join(base_dir, '..', 'plots', site, f'{instrument}.html')
+            generate_html(site, instrument, title, figs, output_path)
+
+if __name__ == "__main__":
+    main()

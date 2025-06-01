@@ -4,133 +4,95 @@ NSA:
       filename: nsasrsC1.a1_snowyear_2025_trimmed.csv
       title: Sonic ranging sounders
       var_name: 
-        - datetime_nsasrsC1.a1_2025
-        - air_temperature_nsasrsC1.a1_2025
-        - air_temperature_2_nsasrsC1.a1_2025
-        - air_temperature_3_nsasrsC1.a1_2025
-        - distance_1_nsasrsC1.a1_2025
-        - distance_2_nsasrsC1.a1_2025
-        - distance_3_nsasrsC1.a1_2025
-        - distance_4_nsasrsC1.a1_2025
-        - distance_5_nsasrsC1.a1_2025
-        - distance_6_nsasrsC1.a1_2025
-        - distance_7_nsasrsC1.a1_2025
-        - distance_8_nsasrsC1.a1_2025
-        - distance_9_nsasrsC1.a1_2025
-        - data_quality_1_nsasrsC1.a1_2025
-        - data_quality_2_nsasrsC1.a1_2025
-        - data_quality_3_nsasrsC1.a1_2025
-        - data_quality_4_nsasrsC1.a1_2025
-        - data_quality_5_nsasrsC1.a1_2025
-        - data_quality_6_nsasrsC1.a1_2025
-        - data_quality_7_nsasrsC1.a1_2025
-        - data_quality_8_nsasrsC1.a1_2025
-        - data_quality_9_nsasrsC1.a1_2025
+        - datetime
+        - [air_temperature, air_temperature_2, air_temperature_3] 
+        - [distance_1, distance_2, distance_3, distance_4, distance_5, distance_6, distance_7, distance_8, distance_9]
+        - [data_quality_1, data_quality_2, data_quality_3, data_quality_4, data_quality_5, data_quality_6, data_quality_7, data_quality_8, data_quality_9]
 
     LPM:
       filename: nsalpmC1.a1_snowyear_2025_trimmed.csv
       title: Laser Precipitation Monitor
       var_name: 
-        - datetime_nsalpmC1.a1_2025
-        - air_temperature_nsalpmC1.a1_2025
-        - accum_precip_nsalpmC1.a1_2025
-        - number_particles_nsalpmC1.a1_2025
+        - datetime
+        - air_temperature
+        - accum_precip
+        - number_particles
 
     SPMF:
       filename: nsaspmfC1.a1_snowyear_2025_trimmed.csv
       title: Solid Precipitation Mass Flux
       var_name:
-        - datetime_nsaspmfC1.a1_2025
-        - mass_flux_top_mean_nsaspmfC1.a1_2025
-        - mass_flux_bottom_mean_nsaspmfC1.a1_2025
-        - wind_speed_top_mean_nsaspmfC1.a1_2025
-        - wind_speed_bottom_mean_nsaspmfC1.a1_2025
+        - datetime
+        - mass_flux_top_mean
+        - mass_flux_bottom_mean
+        - wind_speed_top_mean
+        - wind_speed_bottom_mean
 
 
-    SONIC:
+    SONICWIND3D:
       filename: nsasonicwind3dC1.a1_snowyear_2025_trimmed.csv
       title: Sonic wind
       var_name: 
-        - datetime_nsasonicwind3dC1.a1_2025
-        - u_wind_nsasonicwind3dC1.a1_2025
-        - v_wind_nsasonicwind3dC1.a1_2025
-        - w_wind_nsasonicwind3dC1.a1_2025
+        - datetime
+        - u_wind
+        - v_wind
+        - w_wind
 
   E12:
     SRS:
       filename: nsasrsE12.a1_snowyear_2025_trimmed.csv
       title: Sonic ranging sounders
       var_name: 
-        - datetime_nsasrsE12.a1_2025
-        - air_temperature_nsasrsE12.a1_2025
-        - air_temperature_2_nsasrsE12.a1_2025
-        - air_temperature_3_nsasrsE12.a1_2025
-        - distance_1_nsasrsE12.a1_2025
-        - distance_2_nsasrsE12.a1_2025
-        - distance_3_nsasrsE12.a1_2025
-        - distance_4_nsasrsE12.a1_2025
-        - distance_5_nsasrsE12.a1_2025
-        - distance_6_nsasrsE12.a1_2025
-        - distance_7_nsasrsE12.a1_2025
-        - distance_8_nsasrsE12.a1_2025
-        - distance_9_nsasrsE12.a1_2025
-        - data_quality_1_nsasrsE12.a1_2025
-        - data_quality_2_nsasrsE12.a1_2025
-        - data_quality_3_nsasrsE12.a1_2025
-        - data_quality_4_nsasrsE12.a1_2025
-        - data_quality_5_nsasrsE12.a1_2025
-        - data_quality_6_nsasrsE12.a1_2025
-        - data_quality_7_nsasrsE12.a1_2025
-        - data_quality_8_nsasrsE12.a1_2025
-        - data_quality_9_nsasrsE12.a1_2025
+        - datetime
+        - [air_temperature, air_temperature_2, air_temperature_3] 
+        - [distance_1, distance_2, distance_3, distance_4, distance_5, distance_6, distance_7, distance_8, distance_9]
+        - [data_quality_1, data_quality_2, data_quality_3, data_quality_4, data_quality_5, data_quality_6, data_quality_7, data_quality_8, data_quality_9]
 
     LPM:
       filename: nsalpmE12.a1_snowyear_2025_trimmed.csv
       title: Laser Precipitation Monitor
       var_name: 
-        - datetime_nsalpmE12.a1_2025
-        - air_temperature_nsalpmE12.a1_2025
-        - accum_precip_nsalpmE12.a1_2025
-        - number_particles_nsalpmE12.a1_2025
+        - datetime
+        - air_temperature
+        - accum_precip
+        - number_particles
 
     SPMF:
       filename: nsaspmfE12.a1_snowyear_2025_trimmed.csv
       title: Solid Precipitation Mass Flux
       var_name:
-        - datetime_nsaspmfE12.a1_2025
-        - mass_flux_top_mean_nsaspmfE12.a1_2025
-        - mass_flux_bottom_mean_nsaspmfE12.a1_2025
-        - wind_speed_top_mean_nsaspmfE12.a1_2025
-        - wind_speed_bottom_mean_nsaspmfE12.a1_2025
+        - datetime
+        - mass_flux_top_mean
+        - mass_flux_bottom_mean
+        - wind_speed_top_mean
+        - wind_speed_bottom_mean
 
 
-    SONIC:
+    SONICWIND3D:
       filename: nsasonicwind3dE12.a1_snowyear_2025_trimmed.csv
       title: Sonic wind
       var_name: 
-        - datetime_nsasonicwind3dE12.a1_2025
-        - u_wind_nsasonicwind3dE12.a1_2025
-        - v_wind_nsasonicwind3dE12.a1_2025
-        - w_wind_nsasonicwind3dE12.a1_2025
+        - datetime
+        - u_wind
+        - v_wind
+        - w_wind
 
     WBGEONOR:
       filename: nsawbgeonorE12.a1_snowyear_2025_trimmed.csv
       title: Weight Bucket GEONOR
       var_name: 
-        - datetime_nsawbgeonorE12.a1_2025
-        - fluid_level_1_nsawbgeonorE12.a1_2025
-        - fluid_level_2_nsawbgeonorE12.a1_2025
-        - fluid_level_3_nsawbgeonorE12.a1_2025
-        - air_temperature_nsawbgeonorE12.a1_2025
+        - datetime
+        - [fluid_level_1, fluid_level_2, fluid_level_3]
+        - air_temperature
 
   E10:
     LPM:
       filename: nsalpmE10.a1_snowyear_2025_trimmed.csv
       title: Laser Precipitation Monitor
       var_name: 
-        - datetime_nsalpmE10.a1_2025
-        - air_temperature_nsalpmE10.a1_2025
-        - accum_precip_nsalpmE10.a1_2025
-        - number_particles_nsalpmE10.a1_2025
+        - datetime
+        - air_temperature
+        - accum_precip
+        - number_particles
 
 
