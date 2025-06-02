@@ -10,19 +10,22 @@ from datetime import datetime
 
 
 # Trim and save the csv to itself with only the specified columns
-def trim_csv(yml):
-    for site in yml['NSA'].keys():
-        for instrument in yml['NSA'][site].keys():
-            filename = yml['NSA'][site][instrument]['filename']
-            var_list = yml['NSA'][site][instrument]['var_name']
+def trim_csv(yml, site, instrument):
+    datastream, filename = filename_from_yml(yml, site, instrument)
+    data_info = yml['NSA'][site][instrument]
+    vars = data_info['var_name']
 
-            try:
-                df = pd.read_csv(f"../../data/{filename}", usecols=var_list)
-                df.to_csv(f"../data/{filename}", index=False)
-                print(f"✅ Trimmed and saved: {filename}")
+    datastream, filename = filename_from_yml(yml, site, instrument)
+    # Flatten the variables + datastream
+    var_list = [item + "_" + datastream for group in vars for item in (group if isinstance(group, list) else [group])]
 
-            except Exception as e:
-                print(f"❌ Failed to process {filename}: {e}")
+    try:
+        df = pd.read_csv(f"../../data/{filename}", usecols=var_list) # need to change the path to the data folder
+        df.to_csv(f"../data/{filename}", index=False) # save to the ANOTHER data folder
+        print(f"✅ Trimmed and saved: {filename}")
+
+    except Exception as e:
+        print(f"❌ Failed to process {filename}: {e}")
 
 def filename_from_yml(yml: dict, site: str, instrument: str) -> str:
     """
