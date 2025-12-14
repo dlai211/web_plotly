@@ -20,8 +20,9 @@ def trim_csv(yml, site, instrument):
     var_list = [item + "_" + datastream for group in vars for item in (group if isinstance(group, list) else [group])]
 
     try:
-        df = pd.read_csv(f"../../data/{filename}", usecols=var_list) # need to change the path to the data folder
-        df.to_csv(f"../data/{filename}", index=False) # save to the ANOTHER data folder
+        # df = pd.read_csv(f"../../data/{filename}", usecols=var_list) # need to change the path to the data folder
+        df = pd.read_csv(f"/Users/whbarndt/Documents/ARM-Data/NSA/{site}/{instrument.upper()}-Processed/{filename}", usecols=var_list) # need to change the path to the data folder
+        df.to_csv(f"../data/{filename}", index=False) # save to ANOTHER data folder
         print(f"✅ Trimmed and saved: {filename}")
 
     except Exception as e:
@@ -40,7 +41,7 @@ def filename_from_yml(yml: dict, site: str, instrument: str) -> str:
         snow_year = current_time.year + 1
     
     datastream = f"{location.lower()}{instrument.lower()}{site}.{data_level}"
-    filename = f"{datastream}_snowyear_{snow_year}_trimmed.csv" # real data does not have "_trimmed" 
+    filename = f"{datastream}_snowyear_{snow_year}.csv" # real data does not have "_trimmed" 
     datastream = datastream + f"_{snow_year}"
 
     return datastream, filename

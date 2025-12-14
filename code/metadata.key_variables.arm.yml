@@ -1,7 +1,7 @@
 NSA:
   C1:
     SRS:
-      filename: nsasrsC1.a1_snowyear_2025_trimmed.csv
+      filename: nsasrsC1.a1_snowyear_2025.csv
       title: Sonic Ranging Sounders
       var_name: 
         - datetime
@@ -10,7 +10,7 @@ NSA:
         - [data_quality_1, data_quality_2, data_quality_3, data_quality_4, data_quality_5, data_quality_6, data_quality_7, data_quality_8, data_quality_9]
 
     LPM:
-      filename: nsalpmC1.a1_snowyear_2025_trimmed.csv
+      filename: nsalpmC1.a1_snowyear_2025.csv
       title: Laser Precipitation Monitor
       var_name: 
         - datetime
@@ -19,7 +19,7 @@ NSA:
         - number_particles
 
     SPMF:
-      filename: nsaspmfC1.a1_snowyear_2025_trimmed.csv
+      filename: nsaspmfC1.a1_snowyear_2025.csv
       title: Solid Precipitation Mass Flux
       var_name:
         - datetime
@@ -30,7 +30,7 @@ NSA:
 
 
     SONICWIND3D:
-      filename: nsasonicwind3dC1.a1_snowyear_2025_trimmed.csv
+      filename: nsasonicwind3dC1.a1_snowyear_2025.csv
       title: Sonic Wind 3D
       var_name: 
         - datetime
@@ -40,7 +40,7 @@ NSA:
 
   E12:
     SRS:
-      filename: nsasrsE12.a1_snowyear_2025_trimmed.csv
+      filename: nsasrsE12.a1_snowyear_2025.csv
       title: Sonic Ranging Sounders
       var_name: 
         - datetime
@@ -49,7 +49,7 @@ NSA:
         - [data_quality_1, data_quality_2, data_quality_3, data_quality_4, data_quality_5, data_quality_6, data_quality_7, data_quality_8, data_quality_9]
 
     LPM:
-      filename: nsalpmE12.a1_snowyear_2025_trimmed.csv
+      filename: nsalpmE12.a1_snowyear_2025.csv
       title: Laser Precipitation Monitor
       var_name: 
         - datetime
@@ -58,7 +58,7 @@ NSA:
         - number_particles
 
     SPMF:
-      filename: nsaspmfE12.a1_snowyear_2025_trimmed.csv
+      filename: nsaspmfE12.a1_snowyear_2025.csv
       title: Solid Precipitation Mass Flux
       var_name:
         - datetime
@@ -69,7 +69,7 @@ NSA:
 
 
     SONICWIND3D:
-      filename: nsasonicwind3dE12.a1_snowyear_2025_trimmed.csv
+      filename: nsasonicwind3dE12.a1_snowyear_2025.csv
       title: Sonic Wind 3D
       var_name: 
         - datetime
@@ -78,7 +78,7 @@ NSA:
         - w_wind
 
     WBGEONOR:
-      filename: nsawbgeonorE12.a1_snowyear_2025_trimmed.csv
+      filename: nsawbgeonorE12.a1_snowyear_2025.csv
       title: Weight Bucket GEONOR
       var_name: 
         - datetime
@@ -87,7 +87,7 @@ NSA:
 
   E10:
     LPM:
-      filename: nsalpmE10.a1_snowyear_2025_trimmed.csv
+      filename: nsalpmE10.a1_snowyear_2025.csv
       title: Laser Precipitation Monitor
       var_name: 
         - datetime
